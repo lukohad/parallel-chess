@@ -1,6 +1,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 //piece definitions
@@ -85,6 +86,8 @@ typedef struct {
 void board_init(Board *board);
 //print the board to the console
 void board_print(const Board *board);
+//load a position from FEN notation, false if the string is malformed
+bool board_from_fen(Board *board, const char *fen);
 
 /*
 initial board state:
