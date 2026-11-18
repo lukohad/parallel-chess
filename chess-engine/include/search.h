@@ -38,4 +38,7 @@ TODO: implement negamax with alpha-beta pruning. (i think carter had some implem
 */
 SearchResult search_sequential(const Board *board, int depth);
 
+//material score in centipawns from the side to move's view
+int evaluate(const Board *board);
+
 #endif

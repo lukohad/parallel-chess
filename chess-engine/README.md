@@ -55,10 +55,10 @@ means no target square is available.
   covers the king moving, the rook moving and the rook being captured with no
   separate cases.
 
-- `include/search.h`, `src/search.c`: search result type and sequential search stub.
+- `include/search.h`, `src/search.c` hold the search result type, material evaluation (`evaluate`, pawn 100, knight and bishop 300, rook 500, queen 900 centipawns) and the sequential search stub.
 - `src/main.c`: starting-position demonstration.
 
-Evaluation, search and multithreading remain unfinished. Calling an unimplemented
+Search and multithreading remain unfinished. Calling an unimplemented
 function prints an error and aborts instead of returning a fabricated result.
 
 Everything builds with `-O2`.
