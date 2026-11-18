@@ -27,6 +27,15 @@ stuff to note in the prelim and final reports, collected while building the engi
   under WSL Ubuntu, gcc 15.2 -O2, timed with gettimeofday. run to run spread is
   about 2%. perft position 3 was dropped from the benchmark set since it finishes
   in ~0.1 s at depth 8, too fast to time reliably.
+- scope change from the proposal. all parallel experiments (prelim and final) run
+  in the Hyper-V Ubuntu VM cs550 with 16 virtual CPUs, so T is {1, 2, 4, 8, 12, 16}
+  instead of up to 20. 16 leaves the host 12 logical CPUs so Windows doesn't steal
+  time from the runs, and the 16 are reserved at 100% (Set-VMProcessor -Reserve 100)
+  so Hyper-V guarantees them to the VM instead of sharing them on demand. the same VM setup is used for every experiment, and the
+  sequential baseline gets rerun inside it since speedup has to divide times from
+  the same environment (the table below is from WSL). the hypervisor decides which
+  physical cores the virtual CPUs land on, so above ~8 threads they spill onto
+  efficiency cores and hyperthread siblings, the slowdown the proposal predicted.
 - sequential baseline, depth 8
 
   | position | nodes | mean | min | max |
