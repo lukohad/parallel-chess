@@ -36,7 +36,17 @@ stuff to note in the prelim and final reports, collected while building the engi
   the same environment (the table below is from WSL). the hypervisor decides which
   physical cores the virtual CPUs land on, so above ~8 threads they spill onto
   efficiency cores and hyperthread siblings, the slowdown the proposal predicted.
-- sequential baseline, depth 8
+- sequential baseline, depth 8, in the VM. this is the one speedups divide by.
+
+  | position | nodes | mean | min | max |
+  |---|---|---|---|---|
+  | start | 8,008,243 | 2.617 s | 2.610 s | 2.630 s |
+  | kiwipete | 13,956,106 | 14.775 s | 14.717 s | 14.905 s |
+  | position4 | 13,556,938 | 3.505 s | 3.493 s | 3.523 s |
+  | position5 | 9,407,837 | 7.541 s | 7.505 s | 7.561 s |
+
+- the same baseline under WSL, within about 1% of the VM, so WSL's numbers were
+  fine for development.
 
   | position | nodes | mean | min | max |
   |---|---|---|---|---|

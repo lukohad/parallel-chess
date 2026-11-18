@@ -133,11 +133,13 @@ page, the standard set for checking move generators.
 - position5 is a middlegame with a white pawn on d7 about to promote, known for
   catching bugs in other engines.
 
-sequential baseline, depth 8, 5 runs, i7-14700K under WSL Ubuntu, gcc 15.2 `-O2`
+sequential baseline, depth 8, 5 runs, i7-14700K, Hyper-V Ubuntu VM cs550 with 16
+virtual CPUs reserved at 100%. every speedup is measured against these times. the
+same run under WSL came out within about 1%.
 
 | position | nodes | mean | min | max |
 |---|---|---|---|---|
-| start | 8,008,243 | 2.605 s | 2.585 s | 2.630 s |
-| kiwipete | 13,956,106 | 14.726 s | 14.493 s | 14.896 s |
-| position4 | 13,556,938 | 3.462 s | 3.426 s | 3.489 s |
-| position5 | 9,407,837 | 7.601 s | 7.541 s | 7.675 s |
+| start | 8,008,243 | 2.617 s | 2.610 s | 2.630 s |
+| kiwipete | 13,956,106 | 14.775 s | 14.717 s | 14.905 s |
+| position4 | 13,556,938 | 3.505 s | 3.493 s | 3.523 s |
+| position5 | 9,407,837 | 7.541 s | 7.505 s | 7.561 s |
