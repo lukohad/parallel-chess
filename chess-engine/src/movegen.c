@@ -172,6 +172,12 @@ void generate_legal_moves(const Board *board, MoveList *list)
     list->count = legal;
 }
 
+// true if the side to move is in check
+bool in_check(const Board *board)
+{
+    return is_attacked(board, king_square(board, board->side_to_move), opponent(board->side_to_move));
+}
+
 // play move into next, leaving board unchanged
 void make_move(const Board *board, Move move, Board *next)
 {

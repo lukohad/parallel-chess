@@ -7,12 +7,15 @@ From this directory:
 
 ```sh
 make
-./ppchess
+./ppchess 5
+./ppchess 4 "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
 make test
 make clean
 ```
 
-The program initializes and prints the standard starting position. Uppercase
+`ppchess depth [fen]` prints the position (the start position if no FEN is given),
+searches it to `depth` plies and prints the best move, score, node count and wall
+time. Uppercase
 letters represent White, lowercase letters represent Black, and dots are empty
 squares. The board uses a 64-square array with `a1 = 0` and `h8 = 63`.
 Castling rights use the four bit masks in `include/board.h`; `en_passant = -1`
@@ -55,11 +58,20 @@ means no target square is available.
   covers the king moving, the rook moving and the rook being captured with no
   separate cases.
 
-- `include/search.h`, `src/search.c` hold the search result type, material evaluation (`evaluate`, pawn 100, knight and bishop 300, rook 500, queen 900 centipawns) and the sequential search stub.
-- `src/main.c`: starting-position demonstration.
+- `include/search.h`, `src/search.c` hold the search result type, material evaluation (`evaluate`, pawn 100, knight and bishop 300, rook 500, queen 900 centipawns) and the sequential search (`search_sequential`).
 
-Search and multithreading remain unfinished. Calling an unimplemented
-function prints an error and aborts instead of returning a fabricated result.
+  the search is negamax with alpha-beta, the same recursion as
+  `document/baseline/alphabeta.c` but on real positions. a position with no legal
+  moves scores as checkmate or stalemate (via `in_check` in movegen), and a sooner
+  mate scores higher so the search goes for the fastest one. the node count goes
+  through the `SearchResult` passed down the recursion instead of a global, so each
+  thread in the parallel versions can count its own nodes without a race. timing
+  lives in `main.c` around the search call (`gettimeofday`, same as in class), so the
+  search itself has no timer in it.
+
+- `src/main.c` reads the command line, runs the search and times it.
+
+Multithreading remains unfinished.
 
 Everything builds with `-O2`.
 

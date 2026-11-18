@@ -33,8 +33,6 @@ depth: Maximum search depth measured in plies (halfmoves).
 
 returns a SearchResult containing the selected move,
 evaluation score, and number of nodes searched.
-
-TODO: implement negamax with alpha-beta pruning. (i think carter had some implementation already)
 */
 SearchResult search_sequential(const Board *board, int depth);
 
