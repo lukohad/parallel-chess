@@ -65,5 +65,7 @@ typedef struct {
 //function prototypes
 void generate_legal_moves(const Board *board, MoveList *list);
 void make_move(const Board *board, Move move, Board *next);
+//true if the side to move is in check
+bool in_check(const Board *board);
 
 #endif

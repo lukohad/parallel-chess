@@ -1,12 +1,12 @@
 CC = gcc
 CPPFLAGS = -Iinclude
-CFLAGS = -std=c11 -Wall -Wextra -Wpedantic
+CFLAGS = -std=c11 -O2 -pthread -Wall -Wextra -Wpedantic
 
 TARGET = ppchess
 OBJECTS = src/main.o src/board.o src/movegen.o src/search.o
 HEADERS = $(wildcard include/*.h)
 
-.PHONY: all clean test
+.PHONY: all clean test bench
 
 all: $(TARGET)
 
@@ -16,12 +16,14 @@ $(TARGET): $(OBJECTS)
 src/%.o: src/%.c $(HEADERS)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
-tests/perft.o: tests/perft.c $(HEADERS)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+tests/perft: tests/perft.c src/board.o src/movegen.o $(HEADERS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ tests/perft.c src/board.o src/movegen.o
 
-test: tests/perft.o
-	@echo "Tests are not implemented; perft is a placeholder. No tests passed."
-	@exit 1
+test: tests/perft
+	./tests/perft
+
+bench: $(TARGET)
+	sh bench.sh
 
 clean:
-	$(RM) $(TARGET) $(OBJECTS) tests/perft.o
+	$(RM) $(TARGET) $(OBJECTS) tests/perft
