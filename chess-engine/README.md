@@ -10,6 +10,7 @@ make
 ./ppchess 5
 ./ppchess 4 "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
 make test
+make bench
 make clean
 ```
 
@@ -95,3 +96,33 @@ the test positions are loaded with `board_from_fen` because the start position
 never reaches castling, promotions or tricky en passant at low depth. a mistyped
 FEN gives a wrong count too, so perft also catches bad positions, which is why
 `board_from_fen` can get away with light validation.
+
+## benchmarks
+
+`make bench` runs `bench.sh`, which searches the start position, Kiwipete and
+perft positions 4 and 5 at depth 8, 5 times each, and prints the node count and
+mean, min and max time per position. `sh bench.sh depth runs` overrides the
+defaults. perft position 3 is left out since it finishes in about 0.1 s at depth
+8, too fast to time reliably. node counts are the same every run because the
+search is deterministic, so only time gets min and max. `.gitattributes` keeps
+`bench.sh` on LF line endings so it still runs from a Windows checkout.
+
+the positions all come from the [chessprogramming perft results](https://www.chessprogramming.org/Perft_Results)
+page, the standard set for checking move generators.
+
+- start is the normal opening position, 20 legal moves.
+- kiwipete is a crowded middlegame made to stress move generators, with castling
+  on both sides, pins, en passant and promotions all possible. 48 legal moves.
+- position4 is a sharp middlegame where white starts in check and both sides have
+  a pawn one step from promoting.
+- position5 is a middlegame with a white pawn on d7 about to promote, known for
+  catching bugs in other engines.
+
+sequential baseline, depth 8, 5 runs, i7-14700K under WSL Ubuntu, gcc 15.2 `-O2`
+
+| position | nodes | mean | min | max |
+|---|---|---|---|---|
+| start | 8,008,243 | 2.605 s | 2.585 s | 2.630 s |
+| kiwipete | 13,956,106 | 14.726 s | 14.493 s | 14.896 s |
+| position4 | 13,556,938 | 3.462 s | 3.426 s | 3.489 s |
+| position5 | 9,407,837 | 7.601 s | 7.541 s | 7.675 s |

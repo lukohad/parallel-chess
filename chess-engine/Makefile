@@ -6,7 +6,7 @@ TARGET = ppchess
 OBJECTS = src/main.o src/board.o src/movegen.o src/search.o
 HEADERS = $(wildcard include/*.h)
 
-.PHONY: all clean test
+.PHONY: all clean test bench
 
 all: $(TARGET)
 
@@ -21,6 +21,9 @@ tests/perft: tests/perft.c src/board.o src/movegen.o $(HEADERS)
 
 test: tests/perft
 	./tests/perft
+
+bench: $(TARGET)
+	sh bench.sh
 
 clean:
 	$(RM) $(TARGET) $(OBJECTS) tests/perft
