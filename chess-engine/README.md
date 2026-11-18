@@ -69,6 +69,9 @@ means no target square is available.
   lives in `main.c` around the search call (`gettimeofday`, same as in class), so the
   search itself has no timer in it.
 
+  moves are searched captures first. sorting captures by victim value (MVV-LVA)
+  prunes better, but captures first is simpler to read.
+
 - `src/main.c` reads the command line, runs the search and times it.
 
 Multithreading remains unfinished.

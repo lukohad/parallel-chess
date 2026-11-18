@@ -15,6 +15,18 @@ int evaluate(const Board *board)
     return board->side_to_move == WHITE ? score : -score;
 }
 
+// put captures first so alpha-beta finds cutoffs sooner
+static void order_moves(MoveList *list)
+{
+    int front = 0;
+    for (int i = 0; i < list->count; ++i) {
+        if (!(list->moves[i].flags & MOVE_CAPTURE)) continue;
+        Move capture = list->moves[i];
+        list->moves[i] = list->moves[front];
+        list->moves[front++] = capture;
+    }
+}
+
 // negamax with alpha-beta, same recursion as document/baseline/alphabeta.c but on real positions
 // ply is the distance from the root, the root records the best move and every node bumps the count
 static int negamax(const Board *board, int depth, int ply, int alpha, int beta, SearchResult *result)
@@ -24,6 +36,7 @@ static int negamax(const Board *board, int depth, int ply, int alpha, int beta, 
     MoveList list;
     generate_legal_moves(board, &list);
     if (list.count == 0) return in_check(board) ? -MATE + ply : 0; // checkmate (sooner is worse), or stalemate
+    order_moves(&list);
     for (int i = 0; i < list.count; ++i) {
         Board next;
         make_move(board, list.moves[i], &next);
