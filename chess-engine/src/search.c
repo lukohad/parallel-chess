@@ -1,5 +1,9 @@
 #include "search.h"
 
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 // wider than any score, used as the starting window
 #define INF 1000000
 // score for being checkmated, far above any material total
@@ -58,5 +62,73 @@ SearchResult search_sequential(const Board *board, int depth)
 {
     SearchResult result = {0};
     result.score = negamax(board, depth, 0, -INF, INF, &result);
+    return result;
+}
+
+// one thread's dealt root moves and what it found
+typedef struct {
+    const Board *board;
+    MoveList moves;
+    int depth;
+    SearchResult result;
+} StaticTask;
+
+// search this thread's root moves with a private alpha, nothing here is shared with other threads
+// repeats negamax's root best-move tracking, merging them would complicate sequential's no-moves and depth 0 cases
+static void *static_worker(void *arg)
+{
+    StaticTask *task = arg;
+    int alpha = -INF;
+    for (int i = 0; i < task->moves.count; ++i) {
+        Move move = task->moves.moves[i];
+        Board next;
+        make_move(task->board, move, &next);
+        int score = -negamax(&next, task->depth - 1, 1, -INF, -alpha, &task->result);
+        if (score > alpha) {
+            alpha = score;
+            task->result.best_move = move;
+            task->result.has_best_move = true;
+        }
+    }
+    task->result.score = alpha;
+    return NULL;
+}
+
+// print what failed and stop, a thread that can't start or finish leaves no valid result
+static void die(const char *message)
+{
+    fputs(message, stderr);
+    abort();
+}
+
+// static root split, root moves are dealt round-robin to threads and the best result wins after the join
+// on a tie the lowest numbered thread wins, so the best move can differ from sequential but the score can't
+SearchResult search_static(const Board *board, int depth, int threads)
+{
+    MoveList moves;
+    generate_legal_moves(board, &moves);
+    if (depth < 1 || moves.count == 0) return search_sequential(board, depth); // nothing to split
+    order_moves(&moves);
+
+    StaticTask tasks[MAX_THREADS];
+    for (int t = 0; t < threads; ++t) tasks[t] = (StaticTask){.board = board, .depth = depth};
+    for (int i = 0; i < moves.count; ++i) { // move i goes to thread i % threads
+        MoveList *hand = &tasks[i % threads].moves;
+        hand->moves[hand->count++] = moves.moves[i];
+    }
+
+    pthread_t ids[MAX_THREADS];
+    for (int t = 0; t < threads; ++t)
+        if (pthread_create(&ids[t], NULL, static_worker, &tasks[t]) != 0) die("search_static: pthread_create failed\n");
+    SearchResult result = {.score = -INF, .nodes = 1}; // the root itself counts as a node
+    for (int t = 0; t < threads; ++t) {
+        if (pthread_join(ids[t], NULL) != 0) die("search_static: pthread_join failed\n");
+        result.nodes += tasks[t].result.nodes;
+        if (tasks[t].result.score > result.score) { // a thread dealt no moves keeps -INF and never wins
+            result.score = tasks[t].result.score;
+            result.best_move = tasks[t].result.best_move;
+            result.has_best_move = true;
+        }
+    }
     return result;
 }

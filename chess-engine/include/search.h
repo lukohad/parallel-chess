@@ -36,6 +36,12 @@ evaluation score, and number of nodes searched.
 */
 SearchResult search_sequential(const Board *board, int depth);
 
+//most threads any parallel search will start
+#define MAX_THREADS 64
+
+//static root split, root moves dealt round-robin to threads (1 to MAX_THREADS) that each keep a private alpha
+SearchResult search_static(const Board *board, int depth, int threads);
+
 //material score in centipawns from the side to move's view
 int evaluate(const Board *board);
 

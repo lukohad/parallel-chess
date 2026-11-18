@@ -1,6 +1,6 @@
 CC = gcc
 CPPFLAGS = -Iinclude
-CFLAGS = -std=c11 -O2 -Wall -Wextra -Wpedantic
+CFLAGS = -std=c11 -O2 -pthread -Wall -Wextra -Wpedantic
 
 TARGET = ppchess
 OBJECTS = src/main.o src/board.o src/movegen.o src/search.o

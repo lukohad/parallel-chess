@@ -7,16 +7,17 @@ From this directory:
 
 ```sh
 make
-./ppchess 5
-./ppchess 4 "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
+./ppchess sequential 5 1
+./ppchess static 8 4 "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
 make test
 make bench
 make clean
 ```
 
-`ppchess depth [fen]` prints the position (the start position if no FEN is given),
-searches it to `depth` plies and prints the best move, score, node count and wall
-time. Uppercase
+`ppchess sequential|static depth threads [fen]` prints the position (the start
+position if no FEN is given), searches it to `depth` plies with the chosen version
+and prints the best move, score, node count and wall time. sequential takes 1
+thread, static takes 1 to 64. Uppercase
 letters represent White, lowercase letters represent Black, and dots are empty
 squares. The board uses a 64-square array with `a1 = 0` and `h8 = 63`.
 Castling rights use the four bit masks in `include/board.h`; `en_passant = -1`
@@ -59,7 +60,7 @@ means no target square is available.
   covers the king moving, the rook moving and the rook being captured with no
   separate cases.
 
-- `include/search.h`, `src/search.c` hold the search result type, material evaluation (`evaluate`, pawn 100, knight and bishop 300, rook 500, queen 900 centipawns) and the sequential search (`search_sequential`).
+- `include/search.h`, `src/search.c` hold the search result type, material evaluation (`evaluate`, pawn 100, knight and bishop 300, rook 500, queen 900 centipawns) the sequential search (`search_sequential`) and the static root split (`search_static`).
 
   the search is negamax with alpha-beta, the same recursion as
   `document/baseline/alphabeta.c` but on real positions. a position with no legal
@@ -73,11 +74,23 @@ means no target square is available.
   moves are searched captures first. sorting captures by victim value (MVV-LVA)
   prunes better, but captures first is simpler to read.
 
+  the static root split orders the root moves, deals them round-robin to T threads
+  (thread t gets moves t, t + T, t + 2T...) and each thread searches its moves with
+  its own private alpha. after the join the best score wins and node counts are
+  summed. the only shared data is the root board and the root move list, and both
+  are only read, so there are no locks. each thread writes just its own task slot,
+  and the main thread reads those only after `pthread_join`, which guarantees it sees
+  everything the thread wrote. at 1 thread it searches exactly the same nodes as the
+  sequential version. with more threads each one prunes less since it can't see the
+  others' alpha, so total nodes go up (search overhead) while time goes down. on a
+  tie the lowest numbered thread wins, so the printed best move can differ from
+  sequential but the score never does.
+
 - `src/main.c` reads the command line, runs the search and times it.
 
-Multithreading remains unfinished.
+The dynamic root split and the hybrid remain unfinished.
 
-Everything builds with `-O2`.
+Everything builds with `-O2 -pthread`.
 
 ## testing
 
@@ -100,11 +113,13 @@ FEN gives a wrong count too, so perft also catches bad positions, which is why
 ## benchmarks
 
 `make bench` runs `bench.sh`, which searches the start position, Kiwipete and
-perft positions 4 and 5 at depth 8, 5 times each, and prints the node count and
-mean, min and max time per position. `sh bench.sh depth runs` overrides the
-defaults. perft position 3 is left out since it finishes in about 0.1 s at depth
+perft positions 4 and 5 at depth 8, 5 times each, and prints the score, node count
+and mean, min and max time per position. `sh bench.sh version threads depth runs`
+overrides the defaults (sequential, 1 thread, depth 8, 5 runs), so a thread sweep
+is `for t in 1 2 4 8 12 16; do sh bench.sh static $t; done`. the score should match
+the sequential one for every version and thread count. perft position 3 is left out since it finishes in about 0.1 s at depth
 8, too fast to time reliably. node counts are the same every run because the
-search is deterministic, so only time gets min and max. `.gitattributes` keeps
+sequential and static searches are deterministic, so only time gets min and max. `.gitattributes` keeps
 `bench.sh` on LF line endings so it still runs from a Windows checkout.
 
 the positions all come from the [chessprogramming perft results](https://www.chessprogramming.org/Perft_Results)

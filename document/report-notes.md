@@ -45,6 +45,22 @@ stuff to note in the prelim and final reports, collected while building the engi
   | position4 | 13,556,938 | 3.462 s | 3.426 s | 3.489 s |
   | position5 | 9,407,837 | 7.601 s | 7.541 s | 7.675 s |
 
+- static root split race review. shared data is the root board and root move
+  list, both read only after the threads start. each thread writes only its own
+  StaticTask slot (its node count, score and best move). the main thread reads those
+  slots only after pthread_join, which guarantees it sees the thread's writes. no
+  shared writes means no locks and no races. also ran it under gcc's
+  ThreadSanitizer (-fsanitize=thread) at 2, 8 and 16 threads with zero reports.
+  tsan only catches races that actually happen in a run, so the paper argument is
+  the real check and tsan backs it up.
+- static split correctness. the score matches sequential on every benchmark
+  position at every thread count tried, and at 1 thread it searches exactly the
+  same nodes. it stays deterministic (same nodes every run) since which thread gets
+  which move never changes.
+- static split search overhead, early numbers at depth 6 in WSL. kiwipete nodes go
+  331,111 (1 thread) -> 416,904 (2) -> 693,804 (4) -> 1,122,947 (8), 3.4x the work
+  at 8 threads, because each thread prunes with only its own alpha. this is the
+  cost the proposal predicted for static splitting.
 - kiwipete runs at ~1M nodes/s versus ~3M for the others. it has far more legal
   moves per node, and the legality check plays and tests every one of them.
 - there's no quiescence search, so scores swing at the search horizon (the start
