@@ -1,0 +1,30 @@
+static, 1 threads, depth 8, 5 runs
+start      score -100  nodes 8008243    mean 2.617s  min 2.583s  max 2.676s
+kiwipete   score -100  nodes 13956106   mean 14.753s  min 14.675s  max 14.807s
+position4  score -700  nodes 13556938   mean 3.448s  min 3.431s  max 3.469s
+position5  score 200   nodes 9407837    mean 7.569s  min 7.530s  max 7.640s
+static, 2 threads, depth 8, 5 runs
+start      score -100  nodes 8437844    mean 1.411s  min 1.406s  max 1.421s
+kiwipete   score -100  nodes 19084469   mean 8.574s  min 8.530s  max 8.624s
+position4  score -700  nodes 17173305   mean 2.151s  min 2.142s  max 2.164s
+position5  score 200   nodes 10494601   mean 4.431s  min 4.385s  max 4.476s
+static, 4 threads, depth 8, 5 runs
+start      score -100  nodes 10157102   mean 0.914s  min 0.906s  max 0.919s
+kiwipete   score -100  nodes 29720185   mean 5.982s  min 5.963s  max 6.004s
+position4  score -700  nodes 26504969   mean 1.871s  min 1.854s  max 1.883s
+position5  score 200   nodes 17182757   mean 3.178s  min 3.163s  max 3.206s
+static, 8 threads, depth 8, 5 runs
+start      score -100  nodes 11951279   mean 0.614s  min 0.604s  max 0.631s
+kiwipete   score -100  nodes 43105933   mean 4.167s  min 4.112s  max 4.239s
+position4  score -700  nodes 28535788   mean 1.398s  min 1.393s  max 1.406s
+position5  score 200   nodes 20557482   mean 2.081s  min 2.066s  max 2.115s
+static, 12 threads, depth 8, 5 runs
+start      score -100  nodes 14458723   mean 0.675s  min 0.636s  max 0.731s
+kiwipete   score -100  nodes 53708240   mean 4.264s  min 4.219s  max 4.305s
+position4  score -700  nodes 28535788   mean 1.414s  min 1.410s  max 1.421s
+position5  score 200   nodes 24678536   mean 2.002s  min 1.949s  max 2.048s
+static, 16 threads, depth 8, 5 runs
+start      score -100  nodes 17064863   mean 0.558s  min 0.548s  max 0.570s
+kiwipete   score -100  nodes 66843467   mean 3.637s  min 3.562s  max 3.758s
+position4  score -700  nodes 28535788   mean 1.429s  min 1.416s  max 1.437s
+position5  score 200   nodes 32475176   mean 1.996s  min 1.933s  max 2.034s
