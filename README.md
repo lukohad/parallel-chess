@@ -35,6 +35,10 @@ The project proposal is in `document/proposal/`, built from the course IEEE temp
 
 `document/report-notes.md` collects notes for the prelim and final reports.
 
+## Preliminary report
+
+The preliminary report is in `document/prelim_proposal/` (IEEE template, same as the proposal). Build with `make` (pdflatex, bibtex, pdflatex twice) inside that folder; output is `document/prelim_proposal/paper.pdf`. References are in `document/prelim_proposal/biblio.bib`. Figures and the mean time table come from `figures/plot_results.py` (matplotlib), which reads saved `bench.sh` output from `chess-engine/results/` (see the engine README). Run it as `python figures/plot_results.py BASELINE VERSION...`, or `make figures` for the current sequential and static files. For each version it writes `<version>_speedup`, `<version>_efficiency` and `<version>_overhead` as PNG and PDF, plus `<version>_times.tex`, which `paper.tex` pulls in with `\input`. It exits with an error if a file isn't `bench.sh` output, if depths differ, or if any score differs from the sequential score.
+
 ## Sequential Baseline
 
 `document/baseline/alphabeta.c` is a single-threaded negamax alpha-beta search over a synthetic game tree: every node has the same number of children, and leaf scores are a hash of the node id, so a given (depth, branching, seed) always produces the same tree. It is the preliminary benchmark for the proposal.
