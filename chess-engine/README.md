@@ -122,6 +122,14 @@ the sequential one for every version and thread count. perft position 3 is left 
 sequential and static searches are deterministic, so only time gets min and max. `.gitattributes` keeps
 `bench.sh` on LF line endings so it still runs from a Windows checkout.
 
+`results/` holds saved `bench.sh` output from the VM, one file per version:
+`sequential.txt` is `sh bench.sh sequential` and `static.txt` is the static thread
+sweep, `for t in 1 2 4 8 12 16; do sh bench.sh static $t; done > results/static.txt`.
+save new versions the same way. the report figures and tables are generated from
+these files by `document/prelim_proposal/figures/plot_results.py`. the current two
+files were transcribed from the tables in `document/report-notes.md`, since the
+original terminal output wasn't saved.
+
 the positions all come from the [chessprogramming perft results](https://www.chessprogramming.org/Perft_Results)
 page, the standard set for checking move generators.
 

@@ -1,0 +1,5 @@
+sequential, 1 threads, depth 8, 5 runs
+start      score -100  nodes 8008243    mean 2.617s  min 2.610s  max 2.630s
+kiwipete   score -100  nodes 13956106   mean 14.775s  min 14.717s  max 14.905s
+position4  score -700  nodes 13556938   mean 3.505s  min 3.493s  max 3.523s
+position5  score 200   nodes 9407837    mean 7.541s  min 7.505s  max 7.561s
